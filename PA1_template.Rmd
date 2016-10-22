@@ -4,8 +4,9 @@ output:
   html_document:
     keep_md: true
 ---
-
-
+```{r, firsttest}
+summary(cars)
+```
 ## Loading and preprocessing the data
 
 
