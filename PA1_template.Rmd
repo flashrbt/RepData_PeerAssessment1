@@ -7,36 +7,48 @@ output:
 
 ## Loading and preprocessing the data
 
+Read data file using read.csv() function, then convert to data table.
+
 ```{r loaddata}
 library(data.table)
 library(ggplot2)
 
 dt_act<-data.table(read.csv("activity.csv"))
 
-dt_totalsteps<-dt_act[,sum(steps,na.rm = TRUE),by=date]
-
-names(dt_totalsteps)<-c("date","total_steps")
-
 
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+First we calculate the total number of steps per day, then get the summary of the totoal steps.
+```{r }
+
+dt_totalsteps<-dt_act[,sum(steps,na.rm = TRUE),by=date]
+
+names(dt_totalsteps)<-c("date","total_steps")
 
 data_summary<-summary(dt_totalsteps$total_steps)
 print(data_summary)
+```
+The mean value of total steps per day is `r data_summary[4]` and the median value of total  steps per day is `r format(data_summary[3],scientific=FALSE)`
 
 
+Here is the histogram of total steps per day
+
+```{r  warning=FALSE}
+hist_totalsteps<-ggplot(data=dt_totalsteps,aes(total_steps))
+hist_totalsteps<-hist_totalsteps+geom_histogram()+xlab("total steps")
+hist_totalsteps<-hist_totalsteps+ggtitle("Total steps per day")
+print(hist_totalsteps)
 
 ```
 
 ## What is the average daily activity pattern?
 
-```{r}
-hist_totalsteps<-ggplot(data=dt_totalsteps,aes(total_steps))
-hist_totalsteps<-hist_totalsteps+geom_histogram()+xlab("total steps")
-print(hist_totalsteps)
+We first calculate the average
+
+```{r  warning=FALSE}
 
 
 dt_act[,step_mean:=mean(steps,na.rm=TRUE),by=interval]

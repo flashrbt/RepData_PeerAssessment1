@@ -2,22 +2,26 @@
 
 ## Loading and preprocessing the data
 
+Read data file using read.csv() function, then convert to data table.
+
 
 ```r
 library(data.table)
 library(ggplot2)
 
 dt_act<-data.table(read.csv("activity.csv"))
-
-dt_totalsteps<-dt_act[,sum(steps,na.rm = TRUE),by=date]
-
-names(dt_totalsteps)<-c("date","total_steps")
 ```
 
 ## What is mean total number of steps taken per day?
 
 
+First we calculate the total number of steps per day, then get the summary of the totoal steps.
+
 ```r
+dt_totalsteps<-dt_act[,sum(steps,na.rm = TRUE),by=date]
+
+names(dt_totalsteps)<-c("date","total_steps")
+
 data_summary<-summary(dt_totalsteps$total_steps)
 print(data_summary)
 ```
@@ -26,13 +30,16 @@ print(data_summary)
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##       0    6778   10400    9354   12810   21190
 ```
+The mean value of total steps per day is 9354 and the median value of total  steps per day is 10400
 
-## What is the average daily activity pattern?
+
+Here is the histogram of total steps per day
 
 
 ```r
 hist_totalsteps<-ggplot(data=dt_totalsteps,aes(total_steps))
 hist_totalsteps<-hist_totalsteps+geom_histogram()+xlab("total steps")
+hist_totalsteps<-hist_totalsteps+ggtitle("Total steps per day")
 print(hist_totalsteps)
 ```
 
@@ -41,6 +48,11 @@ print(hist_totalsteps)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+## What is the average daily activity pattern?
+
+We first calculate the average
+
 
 ```r
 dt_act[,step_mean:=mean(steps,na.rm=TRUE),by=interval]
@@ -67,7 +79,7 @@ g<-g+geom_line()+ylab("Average steps")
 print(g)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-2.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 
 ## Imputing missing values
