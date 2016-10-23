@@ -90,7 +90,7 @@ hist_totalsteps<-hist_totalsteps+ggtitle("Total steps per day")
 print(hist_totalsteps)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 ## What is the average daily activity pattern?
 
@@ -122,7 +122,7 @@ g<-g+geom_line()+ylab("Average steps")+ggtitle("Average steps vs. interval")
 print(g)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 Then we calculate the maximum number of steps averaged across all the days:
 
@@ -176,7 +176,7 @@ hist_new_totalsteps<-hist_new_totalsteps+geom_histogram(bins=40)+xlab("total ste
 print(hist_new_totalsteps)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 The mean value of total steps per day is 10770 and the median value of total  steps per day is 10770. the difference between those values comparing with first part is 1416 and 370. The filled data increased bothe the mean value and the median value.
 
@@ -202,6 +202,6 @@ weekdayplot<-ggplot(weekdaysplit,aes(x=interval,y=meansteps))+
 print(weekdayplot)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 So in weekends, the activity is higher in weekedn that in weekday after 1000 intervals 

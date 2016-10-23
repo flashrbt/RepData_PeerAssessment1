@@ -9,7 +9,7 @@ output:
 
 Read data file using read.csv() function, then convert to data table.
 
-```{r loaddata}
+```{r warning=FALSE}
 library(data.table)
 library(ggplot2)
 library(plyr)
