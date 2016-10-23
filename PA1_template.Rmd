@@ -12,6 +12,8 @@ Read data file using read.csv() function, then convert to data table.
 ```{r loaddata}
 library(data.table)
 library(ggplot2)
+library(plyr)
+library(dplyr)
 
 dt_act<-data.table(read.csv("activity.csv"))
 
@@ -34,11 +36,12 @@ print(data_summary)
 The mean value of total steps per day is `r data_summary[4]` and the median value of total  steps per day is `r format(data_summary[3],scientific=FALSE)`
 
 
-Here is the histogram of total steps per day
+Here is the histogram of total steps per day with bins=40:
 
 ```{r  warning=FALSE}
+
 hist_totalsteps<-ggplot(data=dt_totalsteps,aes(total_steps))
-hist_totalsteps<-hist_totalsteps+geom_histogram()+xlab("total steps")
+hist_totalsteps<-hist_totalsteps+geom_histogram(bins = 40)+xlab("total steps")
 hist_totalsteps<-hist_totalsteps+ggtitle("Total steps per day")
 print(hist_totalsteps)
 
@@ -46,7 +49,7 @@ print(hist_totalsteps)
 
 ## What is the average daily activity pattern?
 
-We first calculate the average
+We first calculate the average number of steps vs. interval, then plot the time series plot of the 5-minute interval and the average number of steps taken across all days.
 
 ```{r  warning=FALSE}
 
@@ -54,17 +57,78 @@ We first calculate the average
 dt_act[,step_mean:=mean(steps,na.rm=TRUE),by=interval]
 
 g<-ggplot(data=dt_act,aes(interval,step_mean))
-g<-g+geom_line()+ylab("Average steps")
+g<-g+geom_line()+ylab("Average steps")+ggtitle("Average steps vs. interval")
 print(g)
 ```
 
+Then we calculate the maximum number of steps averaged across all the days:
+```{r}
+
+print(c(max(dt_act$step_mean),dt_act$interval[which.max(dt_act$step_mean)]))
+
+```
+
+The maximum number is `r max(dt_act$step_mean)` and the 5 minute inverval with this maximum number is `r dt_act$interval[which.max(dt_act$step_mean)]`
 
 ## Imputing missing values
+
+The total number of missing value in the data set is `r sum(is.na(dt_act$steps))` . 
+
+Here we use the mean value of steps to replace the "NA" missing value in steps, and saving the original steps value into "old_steps".
+
+A new dataset "dt_new_act" is created. It is equal to the original dataset but with the missing data filled in.
 
 ```{r warning=FALSE, results="hide" }
 dt_act[,old_steps:=steps]
 
 dt_act[,steps:=replace(steps,is.na(steps),step_mean)]
+
+dt_new_act<-select(dt_act,steps,date,interval)
+
+
 ```
 
+We calculate the total steps in the the new data set "dt_new_act" per day and plot the histogram 
+
+```{r}
+dt_new_totalsteps<-dt_new_act[,sum(steps),by=date]
+names(dt_new_totalsteps)<-c("date","new_total_steps")
+
+
+data_summary_2<-summary(dt_new_totalsteps$new_total_steps)
+print(data_summary_2)
+
+hist_new_totalsteps<-ggplot(data=dt_new_totalsteps,aes(new_total_steps))
+hist_new_totalsteps<-hist_new_totalsteps+geom_histogram(bins=40)+xlab("total steps")+ggtitle("Total steps per day with filled data")
+print(hist_new_totalsteps)
+
+```
+
+The mean value of total steps per day is `r format(data_summary_2[4],scientific=FALSE)` and the median value of total  steps per day is `r format(data_summary_2[3],scientific=FALSE)`. the difference between those values comparing with first part is `r data_summary_2[4]-data_summary[4]` and `r data_summary_2[3]-data_summary[3]`. The filled data increased bothe the mean value and the median value.
+
+
+
 ## Are there differences in activity patterns between weekdays and weekends?
+
+First we split teh data from weekdays and weekends.
+
+```{r}
+
+
+allweekdays= c("Monday","Tuesday","Wednesday","Thursday","Friday")
+
+dt_new_act$weekday<-as.factor(ifelse(weekdays(as.Date(dt_new_act$date))%in%allweekdays,"weekday","weekend"))
+
+weekdaysplit<-ddply(dt_new_act, c("interval","weekday"),summarise,
+                                     meansteps = mean(steps,na.rm=TRUE)
+)
+
+weekdayplot<-ggplot(weekdaysplit,aes(x=interval,y=meansteps))+
+       facet_wrap(~weekday,nrow=2,ncol=1)+ geom_line()
+ weekdayplot<-weekdayplot+ ggtitle("Mean steps over each 5min interval split by weekday/weekend")+ylab("Average steps")+ xlab("Interval ")
+print(weekdayplot)
+
+
+```
+
+So in weekends, the activity is higher in weekedn that in weekday after 1000 intervals 
