@@ -54,6 +54,7 @@ dt_new_act$weekday<-as.factor(ifelse(weekdays(as.Date(dt_new_act$date))%in%weekd
 weekdaysplit<-ddply(dt_new_act, c("interval","weekday"),summarise,
                                      meansteps = mean(steps,na.rm=TRUE)
 )
+# weekdaysplit2<-dt_new_act[,.(meansteps=mean(steps,na.rm = TRUE)),by=.(interval,weekday)][,.(totalmeansteps=sum(meansteps)),by=.(interval,weekday)]
 
 weekdayplot<-ggplot(weekdaysplit,aes(x=interval,y=meansteps))+
         facet_wrap(~weekday,nrow=2,ncol=1)+ geom_line()
